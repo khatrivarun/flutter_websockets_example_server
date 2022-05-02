@@ -6,6 +6,10 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import {
+  SendMessageDto,
+  validateSendMessageDto,
+} from 'src/dtos/send-message.dto';
 import { Server, WebSocket as Socket } from 'ws';
 
 @WebSocketGateway()
@@ -21,11 +25,16 @@ export class EventsGateway implements OnGatewayConnection {
   @SubscribeMessage('message')
   handleMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() chat: any,
-  ): string {
-    console.log(chat);
-    client.send(JSON.stringify({ status: 'ok' }));
+    @MessageBody() sendMessageDto: SendMessageDto,
+  ): void {
+    const checkValidation = validateSendMessageDto(sendMessageDto);
 
-    return 'Hello world!';
+    if (checkValidation.length > 0) {
+      client.send(JSON.stringify({ errors: checkValidation }));
+      return;
+    }
+
+    console.log(sendMessageDto);
+    client.send(JSON.stringify({ status: 'ok' }));
   }
 }

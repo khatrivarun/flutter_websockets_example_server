@@ -1,3 +1,4 @@
+import { UseGuards } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -10,6 +11,7 @@ import {
   SendMessageDto,
   validateSendMessageDto,
 } from 'src/dtos/send-message.dto';
+import { AuthGuard } from 'src/guards/auth.guard';
 import { Server, WebSocket as Socket } from 'ws';
 
 @WebSocketGateway()
@@ -23,6 +25,7 @@ export class EventsGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('message')
+  @UseGuards(AuthGuard)
   handleMessage(
     @ConnectedSocket() client: Socket,
     @MessageBody() sendMessageDto: SendMessageDto,

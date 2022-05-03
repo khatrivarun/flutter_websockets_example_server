@@ -3,6 +3,7 @@ import {
   ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -15,7 +16,10 @@ import { AuthGuard } from 'src/guards/auth.guard';
 import { Server, WebSocket as Socket } from 'ws';
 
 @WebSocketGateway()
-export class EventsGateway implements OnGatewayConnection {
+export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  handleDisconnect(client: Socket) {
+    console.log('Client Left');
+  }
   @WebSocketServer()
   webSocketServer: Server;
 
